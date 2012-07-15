@@ -8,7 +8,7 @@ development:
   encoding: unicode
   database: blog_development
   pool: 5
-  username: postgres
+  username: gk
   password: z0MB!5s!
 
 
@@ -20,7 +20,7 @@ test:
   encoding: unicode
   database: blog_development
   pool: 5
-  username: postgres
+  username: gk
   password: z0MB!5s!
 
 production:
@@ -28,5 +28,5 @@ production:
   encoding: unicode
   database: blog_development
   pool: 5
-  username: postgres
+  username: gk
   password: z0MB!5s!
