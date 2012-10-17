@@ -29,5 +29,6 @@ group :test do
   gem 'win32console', '1.3.0'
   gem 'guard-spork'
   gem 'spork'
+  gem 'factory_girl_rails', '4.1.0'
 end
 
