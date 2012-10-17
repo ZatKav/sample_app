@@ -31,7 +31,7 @@ describe "Static pages" do
     before { visit about_path }
 
     let(:heading) { 'About' }
-rs    let(:page_title) { 'About Us' }
+    let(:page_title) { 'About Us' }
 
     it_should_behave_like "all static pages"
   end
@@ -55,9 +55,9 @@ rs    let(:page_title) { 'About Us' }
     page.should have_selector 'title', text: full_title('Contact')
     click_link "Home"
     click_link "Sign up now!"
-    page.should have_selector 'title', text: full_title('Sign Up')
+    page.should have_selector 'title', text: full_title('Sign up')
     click_link "sample app"
-    page.should  have_selector 'title', text: full_title('Sample App')
+    page.should  have_selector 'h1', text: full_title('Sample App')
   end
   
 
