@@ -37,8 +37,8 @@ describe User do
 
   describe "when email format is valid" do
     it "should be valid" do
-     # addresses = %w[user@foo.COM A_US-ER@f.b.org frst.lst@foo.jp a+b@baz.cn]
-       addresses = %w[giacomokavanagh@hotmail.com ]
+      addresses = %w[user@foo.COM A_US-ER@f.b.org frst.lst@foo.jp a+b@baz.cn]
+      #addresses = %w[giacomokavanagh@hotmail.com ]
       addresses.each do |valid_address|
         @user.email = valid_address
         @user.should be_valid
@@ -55,12 +55,73 @@ describe User do
     it { should_not be_valid }
   end
   
+  it { should respond_to(:admin) }
+  it { should respond_to(:authenticate) }
+
+  it { should be_valid }
+  it { should_not be_admin }
+
+  describe "with admin attribute set to 'true'" do
+    before do
+      @user.save!
+      @user.toggle!(:admin)
+    end
+
+    it { should be_admin }
+  end
+  
 end
 
 describe "User pages" do
 
   subject { page }
 
+  describe "index" do
+
+    let(:user) { FactoryGirl.create(:user) }
+
+    before(:each) do
+      sign_in user
+      visit users_path
+    end
+
+    it { should have_selector('title', text: 'All users') }
+    it { should have_selector('h1',    text: 'All users') }
+
+    describe "pagination" do
+
+      before(:all) { 30.times { FactoryGirl.create(:user) } }
+      after(:all)  { User.delete_all }
+
+      it { should have_selector('div.pagination') }
+
+      it "should list each user" do
+        User.paginate(page: 1).each do |user|
+          page.should have_selector('li', text: user.name)
+        end
+      end
+    end
+  
+    describe "delete links" do
+
+      it { should_not have_link('delete') }
+
+      describe "as an admin user" do
+        let(:admin) { FactoryGirl.create(:admin) }
+        before do
+          sign_in admin
+          visit users_path
+        end
+
+        it { should have_link('delete', href: user_path(User.first)) }
+        it "should be able to delete another user" do
+          expect { click_link('delete') }.to change(User, :count).by(-1)
+        end
+        it { should_not have_link('delete', href: user_path(admin)) }
+      end
+    end
+  end
+  
   describe "profile page" do
     let(:user) { FactoryGirl.create(:user) }
     before { visit user_path(user) }
@@ -68,6 +129,7 @@ describe "User pages" do
     it { should have_selector('h1',    text: user.name) }
     it { should have_selector('title', text: user.name) }
   end
+
   describe "signup" do
 
     before { visit signup_path }
@@ -96,8 +158,11 @@ describe "User pages" do
 
   describe "edit" do
     let(:user) { FactoryGirl.create(:user) }
-    before { visit edit_user_path(user) }
-
+    before do
+      sign_in user
+      visit edit_user_path(user)
+    end
+    
     describe "page" do
       it { should have_selector('h1',    text: "Update your profile") }
       it { should have_selector('title', text: "Edit user") }
